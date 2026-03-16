@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist Diário · CX & Fidelização · Pacto</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #C0392B;
+    --bg: #F4F4F2;
+    --surface: #FFFFFF;
+    --surface2: #F0EFED;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --text: #1A1A1A;
+    --text2: #555555;
+    --text3: #888888;
+    --green: #1B5E20;
+    --green-bg: #E8F5E9;
+    --green-border: #43A047;
+    --danger: #B71C1C;
+    --danger-bg: #FFEBEE;
+    --danger-border: #EF5350;
+    --warn: #E65100;
+    --warn-bg: #FFF3E0;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .app-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .app-sub { font-size: 13px; color: var(--text2); margin-left: 6px; }
+  .date-badge {
+    font-size: 12px; color: var(--text2);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  /* ── MAIN ── */
+  .main { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  /* ── SELECTOR ── */
+  .selector-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .selector-label { font-size: 13px; color: var(--text2); margin-bottom: 8px; font-weight: 500; }
+  select {
+    width: 100%; font-size: 15px; padding: 10px 12px;
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text);
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    cursor: pointer;
+  }
+  select:focus { outline: 2px solid var(--red); outline-offset: 1px; }
+
+  /* ── HEADER CARD ── */
+  .header-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .hc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .hc-name { font-size: 22px; font-weight: 600; color: var(--text); margin-top: 2px; }
+  .hc-role { font-size: 13px; color: var(--text2); margin-top: 3px; }
+  .squad-badge {
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+  }
+  .progress-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+  .prog-bar-wrap { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .prog-bar { height: 100%; border-radius: 3px; transition: width .35s ease; }
+  .prog-lbl { font-size: 12px; color: var(--text2); white-space: nowrap; min-width: 54px; text-align: right; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .stat-box { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; text-align: center; }
+  .stat-num { font-size: 20px; font-weight: 600; }
+  .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .c-ok { color: var(--green); }
+  .c-warn { color: var(--warn); }
+  .c-danger { color: var(--danger); }
+
+  /* ── ALL DONE ── */
+  .all-done {
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .all-done-icon { font-size: 28px; margin-bottom: 6px; }
+  .all-done-txt { font-size: 16px; font-weight: 600; color: var(--green); }
+  .all-done-sub { font-size: 13px; color: var(--green); margin-top: 4px; opacity: .8; }
+
+  /* ── PERIOD SECTION ── */
+  .period-section { margin-bottom: 20px; }
+  .period-header {
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: .07em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .period-pending {
+    font-size: 11px; font-weight: 500;
+    background: var(--surface2); color: var(--text3);
+    padding: 2px 8px; border-radius: 20px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .period-pending.has-pending { background: var(--warn-bg); color: var(--warn); }
+
+  /* ── TASK ITEM ── */
+  .task-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 11px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .12s;
+    margin-bottom: 6px;
+    background: var(--surface);
+    user-select: none;
+  }
+  .task-item:hover { background: var(--surface2); }
+  .task-item:active { transform: scale(0.99); }
+  .task-item.done { opacity: .5; }
+  .task-item.critical-pending { border-color: var(--danger-border); background: var(--danger-bg); }
+  .task-item.critical-pending:hover { background: #FFCDD2; }
+
+  .chk {
+    width: 20px; height: 20px;
+    border: 1.5px solid var(--border2);
+    border-radius: 5px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px; transition: all .15s;
+    background: var(--surface);
+  }
+  .chk.checked { background: var(--green); border-color: var(--green); }
+  .chk svg { display: none; }
+  .chk.checked svg { display: block; }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+  .task-item.done .task-text { text-decoration: line-through; color: var(--text3); }
+
+  .tag-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+  .metric-tag {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--surface2); color: var(--text3);
+    border: 1px solid var(--border);
+  }
+  .penalty-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 20px;
+    background: var(--danger-bg); color: var(--danger);
+    font-weight: 600; border: 1px solid var(--danger-border);
+  }
+  .critical-tag {
+    font-size: 10px; padding: 2px 7px; border-radius: 20px;
+    background: var(--danger); color: #fff;
+    font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+  }
+
+  /* ── EMPTY ── */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); font-size: 15px; }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* ── RESET BTN ── */
+  .reset-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    font-size: 13px; color: var(--text2);
+    cursor: pointer; transition: background .12s;
+  }
+  .reset-btn:hover { background: var(--surface2); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; padding: 20px;
+    font-size: 12px; color: var(--text3);
+  }
+
+  @media (max-width: 480px) {
+    .app-sub { display: none; }
+    .stats-row { grid-template-columns: 1fr 1fr 1fr; }
+    .stat-num { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-left">
+    <div class="logo-dot"></div>
+    <span class="app-title">Checklist Diário</span>
+    <span class="app-sub">CX &amp; Fidelização · Pacto</span>
+  </div>
+  <span class="date-badge" id="date-lbl"></span>
+</header>
+
+<div class="main">
+
+  <div class="selector-card">
+    <div class="selector-label">Quem é você hoje?</div>
+    <select id="person-sel">
+      <option value="">— Selecione seu nome —</option>
+      <optgroup label="S1 · Experiência &amp; Saúde">
+        <option value="yago">Yago</option>
+        <option value="gabriel">Gabriel</option>
+      </optgroup>
+      <optgroup label="S2 · Gestão da Base (0–90 dias)">
+        <option value="analuisa">Ana Luisa</option>
+        <option value="felipe">Felipe</option>
+      </optgroup>
+      <optgroup label="S3 · Garantia de Receita">
+        <option value="davi">Davi</option>
+        <option value="giovanna">Giovanna</option>
+      </optgroup>
+      <optgroup label="S4 · Educação &amp; Conhecimento">
+        <option value="lais">Laís</option>
+        <option value="jucele">Jucele</option>
+        <option value="mariana">Mariana</option>
+      </optgroup>
+      <optgroup label="S5 · CX Jornadas">
+        <option value="cibely">Cibely</option>
+        <option value="jefferson">Jefferson</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <div id="main-content">
+    <div class="empty-state">
+      <div class="empty-icon">☑</div>
+      Selecione seu nome para ver as tarefas do dia.
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Pacto Soluções · CX &amp; Fidelização · 2026 · Uso interno</div>
+
+<script>
+const TODAY_OBJ = new Date();
+const TODAY_KEY = `${TODAY_OBJ.getFullYear()}-${TODAY_OBJ.getMonth()}-${TODAY_OBJ.getDate()}`;
+document.getElementById('date-lbl').textContent = TODAY_OBJ.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+
+const PEOPLE = {
+  yago:{
+    name:'Yago', squad:'S1 · Experiência & Saúde', role:'NPS',
+    color:'#1565C0', bg:'#DBEAFE', txt:'#1e40af',
+    tasks:[
+      {id:'y1',p:'manha',text:'Verificar novas respostas de NPS recebidas e classificar por nota',metric:'NPS Médio · +120pts',penalty:null,critical:false},
+      {id:'y2',p:'manha',text:'Identificar todos os detratores (nota ≤ 6) e abrir laudo para cada um',metric:'Tratativa com Laudo · +60pts',penalty:'−50pts se laudos faltarem',critical:true},
+      {id:'y3',p:'manha',text:'Checar se existe oscilação de NPS sem causa mapeada no sistema',metric:'Compliance de NPS',penalty:'−100pts se oscilar sem mapeamento',critical:true},
+      {id:'y4',p:'tarde',text:'Contatar todos os detratores do dia e registrar tratativa completa no sistema',metric:'Tratativa com Laudo · meta ≥ 95%',penalty:'−50pts se laudos incompletos',critical:true},
+      {id:'y5',p:'tarde',text:'Registrar pelo menos 1 ação de melhoria com base nos feedbacks da semana',metric:'Ações de Melhoria · +80pts · meta ≥ 8/mês',penalty:null,critical:false},
+      {id:'y6',p:'tarde',text:'Verificar taxa de resposta às pesquisas de NPS — meta ≥ 75%',metric:'Taxa de Resposta · +60pts',penalty:null,critical:false},
+      {id:'y7',p:'final',text:'Confirmar: nenhum detrator sem laudo e sem contato registrado hoje',metric:'SLA de tratativas',penalty:'−100pts por oscilação sem mapeamento',critical:true},
+      {id:'y8',p:'final',text:'Consolidar dados do dia para o relatório semanal (sexta-feira)',metric:'Relatório semanal de saúde da base',penalty:null,critical:false},
+    ]
+  },
+  gabriel:{
+    name:'Gabriel', squad:'S1 · Experiência & Saúde', role:'CSAT',
+    color:'#1565C0', bg:'#DBEAFE', txt:'#1e40af',
+    tasks:[
+      {id:'g1',p:'manha',text:'Verificar novas respostas de CSAT do dia anterior',metric:'CSAT Médio · +120pts · meta ≥ 90%',penalty:null,critical:false},
+      {id:'g2',p:'manha',text:'Identificar respostas com CSAT < 70% e abrir laudo para cada insatisfação',metric:'Identificação de Insatisfações · +80pts',penalty:'−50pts se laudos faltarem',critical:true},
+      {id:'g3',p:'manha',text:'Checar se há oscilação de CSAT sem causa mapeada',metric:'Compliance CSAT',penalty:'−100pts se oscilar sem mapeamento',critical:true},
+      {id:'g4',p:'tarde',text:'Contatar clientes com CSAT baixo e registrar tratativa com laudo completo',metric:'SLA de Tratativa · +80pts · meta ≥ 95%',penalty:'−30pts por atraso injustificado',critical:true},
+      {id:'g5',p:'tarde',text:'Mapear causa da insatisfação: produto, atendimento, processo ou expectativa',metric:'Identificação de Insatisfações',penalty:null,critical:false},
+      {id:'g6',p:'tarde',text:'Verificar taxa de resposta às pesquisas de CSAT — meta ≥ 75%',metric:'Taxa de Resposta · +60pts',penalty:null,critical:false},
+      {id:'g7',p:'final',text:'Confirmar: nenhuma tratativa de CSAT vencida além do SLA hoje',metric:'SLA de Tratativa',penalty:'−100pts por oscilação sem mapeamento',critical:true},
+      {id:'g8',p:'final',text:'Atualizar Health Score dos clientes com interação no dia',metric:'Saúde da base · semanal',penalty:null,critical:false},
+    ]
+  },
+  analuisa:{
+    name:'Ana Luisa', squad:'S2 · Gestão da Base (0–90 dias)', role:'Implantação',
+    color:'#BF360C', bg:'#FFF3E0', txt:'#9a3412',
+    tasks:[
+      {id:'al1',p:'manha',text:'Verificar novos contratos assinados D+0 e incluir na carteira ativa',metric:'Cobertura da carteira 0–90d',penalty:null,critical:false},
+      {id:'al2',p:'manha',text:'Listar clientes em D+10 e realizar pesquisa de ativação — meta ≥ 90% de resposta',metric:'Taxa de Resposta D+10 · +60pts',penalty:null,critical:false},
+      {id:'al3',p:'manha',text:'Identificar clientes sem atividade há 7+ dias e priorizar contato ativo',metric:'Clientes em Risco Identificados · +60pts',penalty:'−100pts se cliente em crise sem contato',critical:true},
+      {id:'al4',p:'tarde',text:'Conduzir tratativas com clientes em risco e avançar checklist de implantação',metric:'Churn 0–90d · +120pts · meta ≤ 10%',penalty:null,critical:false},
+      {id:'al5',p:'tarde',text:'Registrar laudo para cada tratativa de cliente em risco realizada',metric:'Tratativa com Laudo · +80pts · meta ≥ 70%',penalty:'−50pts se laudos faltarem',critical:true},
+      {id:'al6',p:'tarde',text:'Atualizar status de cada cliente na carteira: ativo / em risco / parado',metric:'Visibilidade da carteira',penalty:null,critical:false},
+      {id:'al7',p:'final',text:'Confirmar: nenhum cliente em crise sem contato registrado hoje',metric:'SLA de crise',penalty:'−100pts por cliente em crise sem contato',critical:true},
+      {id:'al8',p:'final',text:'Verificar se há passagens de bastão para clientes que completaram 90 dias',metric:'Passagem de bastão',penalty:null,critical:false},
+    ]
+  },
+  felipe:{
+    name:'Felipe', squad:'S2 · Gestão da Base (0–90 dias)', role:'Implantação',
+    color:'#BF360C', bg:'#FFF3E0', txt:'#9a3412',
+    tasks:[
+      {id:'f1',p:'manha',text:'Verificar novos contratos assinados D+0 e incluir na carteira ativa',metric:'Cobertura da carteira 0–90d',penalty:null,critical:false},
+      {id:'f2',p:'manha',text:'Listar clientes em D+10 e realizar pesquisa de ativação — meta ≥ 90% de resposta',metric:'Taxa de Resposta D+10 · +60pts',penalty:null,critical:false},
+      {id:'f3',p:'manha',text:'Identificar clientes sem atividade há 7+ dias e priorizar contato ativo',metric:'Clientes em Risco Identificados · +60pts',penalty:'−100pts se cliente em crise sem contato',critical:true},
+      {id:'f4',p:'tarde',text:'Conduzir tratativas com clientes em risco e avançar checklist de implantação',metric:'Churn 0–90d · +120pts · meta ≤ 10%',penalty:null,critical:false},
+      {id:'f5',p:'tarde',text:'Registrar laudo para cada tratativa de cliente em risco realizada',metric:'Tratativa com Laudo · +80pts · meta ≥ 70%',penalty:'−50pts se laudos faltarem',critical:true},
+      {id:'f6',p:'tarde',text:'Atualizar status de cada cliente na carteira: ativo / em risco / parado',metric:'Visibilidade da carteira',penalty:null,critical:false},
+      {id:'f7',p:'final',text:'Confirmar: nenhum cliente em crise sem contato registrado hoje',metric:'SLA de crise',penalty:'−100pts por cliente em crise sem contato',critical:true},
+      {id:'f8',p:'final',text:'Verificar se há passagens de bastão para clientes que completaram 90 dias',metric:'Passagem de bastão',penalty:null,critical:false},
+    ]
+  },
+  davi:{
+    name:'Davi', squad:'S3 · Garantia de Receita', role:'Retenção',
+    color:'#1B5E20', bg:'#E8F5E9', txt:'#14532d',
+    tasks:[
+      {id:'dv1',p:'manha',text:'Verificar novas solicitações de cancelamento e registrar no pipeline',metric:'SLA de Resposta · +60pts',penalty:'−100pts por solicitação sem contato',critical:true},
+      {id:'dv2',p:'manha',text:'Checar SLA: alguma solicitação acima de 24h sem 1ª tratativa?',metric:'SLA · meta ≥ 95%',penalty:'−100pts por SLA vencido',critical:true},
+      {id:'dv3',p:'manha',text:'Priorizar fila de retenção por MRR em risco — maior MRR primeiro',metric:'MRR Protegido · +120pts',penalty:null,critical:false},
+      {id:'dv4',p:'tarde',text:'Conduzir tratativas de retenção com clientes em negociação',metric:'% Reversão de Cancelamento · +120pts · meta ≥ 45%',penalty:null,critical:false},
+      {id:'dv5',p:'tarde',text:'Registrar todas as tratativas no sistema com dados completos e laudo',metric:'Registro Adequado de Tratativas · +80pts · meta 100%',penalty:'−50pts se laudos faltarem',critical:true},
+      {id:'dv6',p:'tarde',text:'Atualizar status do pipeline: em negociação / revertido / churn confirmado',metric:'Visibilidade do pipeline',penalty:null,critical:false},
+      {id:'dv7',p:'final',text:'Confirmar: nenhuma solicitação sem contato realizado hoje',metric:'SLA crítico',penalty:'−100pts por solicitação sem contato',critical:true},
+      {id:'dv8',p:'final',text:'Atualizar MRR protegido vs perdido do dia para o relatório mensal',metric:'MRR Protegido',penalty:null,critical:false},
+    ]
+  },
+  giovanna:{
+    name:'Giovanna', squad:'S3 · Garantia de Receita', role:'Adm Churn',
+    color:'#1B5E20', bg:'#E8F5E9', txt:'#14532d',
+    tasks:[
+      {id:'gv1',p:'manha',text:'Verificar distratos pendentes e checar SLA de processamento — meta ≥ 98%',metric:'SLA de Distrato · +60pts',penalty:'−50pts por distrato fora do prazo',critical:true},
+      {id:'gv2',p:'manha',text:'Registrar motivo correto de cancelamento para cada distrato processado',metric:'Registro Correto do Motivo · +60pts · meta 100%',penalty:'−100pts por cancelamento sem ação de prevenção',critical:true},
+      {id:'gv3',p:'manha',text:'Identificar cancelamentos onde ação de prevenção ainda pode ser executada',metric:'Ações de Prevenção · +100pts · meta ≥ 5/mês',penalty:'−100pts por cancelamento sem prevenção',critical:true},
+      {id:'gv4',p:'tarde',text:'Executar ações de prevenção para cancelamentos em andamento',metric:'Ações de Prevenção',penalty:null,critical:false},
+      {id:'gv5',p:'tarde',text:'Atualizar relatório de churn com dados do dia: motivo, perfil e MRR perdido',metric:'Relatórios Detalhados · +60pts',penalty:null,critical:false},
+      {id:'gv6',p:'tarde',text:'Verificar e tratar distratos que estão fora do prazo',metric:'SLA de Distrato',penalty:'−50pts por distrato fora do prazo',critical:true},
+      {id:'gv7',p:'final',text:'Confirmar: todos os distratos do dia processados com motivo correto registrado',metric:'Compliance de motivos',penalty:null,critical:false},
+      {id:'gv8',p:'final',text:'Registrar 1 insight do dia no relatório estratégico de churn',metric:'Relatórios Detalhados',penalty:null,critical:false},
+    ]
+  },
+  lais:{
+    name:'Laís', squad:'S4 · Educação & Conhecimento', role:'Educação',
+    color:'#4A148C', bg:'#EDE7F6', txt:'#3b0764',
+    tasks:[
+      {id:'ls1',p:'manha',text:'Verificar novos releases do produto: há conteúdo a produzir em até 3 dias?',metric:'Tempo de Publicação Pós-Release · +120pts',penalty:'−50pts por publicação com erros críticos',critical:true},
+      {id:'ls2',p:'manha',text:'Revisar fila de artigos a publicar e priorizar conforme backlog',metric:'Artigos Publicados · +120pts · meta ≥ 10/mês',penalty:null,critical:false},
+      {id:'ls3',p:'manha',text:'Checar cobertura de IA: há dúvidas recorrentes do CS sem conteúdo mapeado?',metric:'Cobertura de IA · +120pts · meta ≥ 90%',penalty:null,critical:false},
+      {id:'ls4',p:'tarde',text:'Produzir ou revisar pelo menos 1 artigo da fila priorizada',metric:'Artigos Publicados',penalty:null,critical:false},
+      {id:'ls5',p:'tarde',text:'Atualizar base de conhecimento de IA com dúvidas identificadas nos atendimentos',metric:'Cobertura de Conteúdo de IA',penalty:null,critical:false},
+      {id:'ls6',p:'tarde',text:'Verificar taxa de uso da base de conhecimento pelo CS — meta ≥ 70%',metric:'Taxa de Uso da Base pelo CS · +80pts',penalty:null,critical:false},
+      {id:'ls7',p:'final',text:'Registrar produção do dia: artigos publicados e atualizações de IA realizadas',metric:'Controle de produção diária',penalty:'−50pts por publicação com erros críticos',critical:false},
+      {id:'ls8',p:'final',text:'Confirmar: nenhum release recente sem cobertura de conteúdo além de 3 dias',metric:'SLA de release',penalty:null,critical:true},
+    ]
+  },
+  jucele:{
+    name:'Jucele', squad:'S4 · Educação & Conhecimento', role:'Educação',
+    color:'#4A148C', bg:'#EDE7F6', txt:'#3b0764',
+    tasks:[
+      {id:'ju1',p:'manha',text:'Verificar novos releases do produto: há conteúdo a produzir em até 3 dias?',metric:'Tempo de Publicação Pós-Release · +120pts',penalty:'−50pts por publicação com erros críticos',critical:true},
+      {id:'ju2',p:'manha',text:'Revisar fila de artigos a publicar e priorizar conforme backlog',metric:'Artigos Publicados · +120pts · meta ≥ 10/mês',penalty:null,critical:false},
+      {id:'ju3',p:'manha',text:'Checar cobertura de IA: há dúvidas recorrentes do CS sem conteúdo mapeado?',metric:'Cobertura de IA · +120pts · meta ≥ 90%',penalty:null,critical:false},
+      {id:'ju4',p:'tarde',text:'Produzir ou revisar pelo menos 1 artigo da fila priorizada',metric:'Artigos Publicados',penalty:null,critical:false},
+      {id:'ju5',p:'tarde',text:'Atualizar base de conhecimento de IA com dúvidas identificadas nos atendimentos',metric:'Cobertura de Conteúdo de IA',penalty:null,critical:false},
+      {id:'ju6',p:'tarde',text:'Verificar taxa de uso da base de conhecimento pelo CS — meta ≥ 70%',metric:'Taxa de Uso da Base pelo CS · +80pts',penalty:null,critical:false},
+      {id:'ju7',p:'final',text:'Registrar produção do dia: artigos publicados e atualizações de IA realizadas',metric:'Controle de produção diária',penalty:null,critical:false},
+      {id:'ju8',p:'final',text:'Confirmar: nenhum release recente sem cobertura de conteúdo além de 3 dias',metric:'SLA de release',penalty:null,critical:true},
+    ]
+  },
+  mariana:{
+    name:'Mariana', squad:'S4 · Educação & Conhecimento', role:'Educação',
+    color:'#4A148C', bg:'#EDE7F6', txt:'#3b0764',
+    tasks:[
+      {id:'ma1',p:'manha',text:'Verificar novos releases do produto: há conteúdo a produzir em até 3 dias?',metric:'Tempo de Publicação Pós-Release · +120pts',penalty:'−50pts por publicação com erros críticos',critical:true},
+      {id:'ma2',p:'manha',text:'Revisar fila de artigos a publicar e priorizar conforme backlog',metric:'Artigos Publicados · +120pts · meta ≥ 10/mês',penalty:null,critical:false},
+      {id:'ma3',p:'manha',text:'Checar cobertura de IA: há dúvidas recorrentes do CS sem conteúdo mapeado?',metric:'Cobertura de IA · +120pts · meta ≥ 90%',penalty:null,critical:false},
+      {id:'ma4',p:'tarde',text:'Produzir ou revisar pelo menos 1 artigo da fila priorizada',metric:'Artigos Publicados',penalty:null,critical:false},
+      {id:'ma5',p:'tarde',text:'Atualizar base de conhecimento de IA com dúvidas identificadas nos atendimentos',metric:'Cobertura de Conteúdo de IA',penalty:null,critical:false},
+      {id:'ma6',p:'tarde',text:'Verificar taxa de uso da base de conhecimento pelo CS — meta ≥ 70%',metric:'Taxa de Uso da Base pelo CS · +80pts',penalty:null,critical:false},
+      {id:'ma7',p:'final',text:'Registrar produção do dia: artigos publicados e atualizações de IA realizadas',metric:'Controle de produção diária',penalty:null,critical:false},
+      {id:'ma8',p:'final',text:'Confirmar: nenhum release recente sem cobertura de conteúdo além de 3 dias',metric:'SLA de release',penalty:null,critical:true},
+    ]
+  },
+  cibely:{
+    name:'Cibely', squad:'S5 · CX Jornadas', role:'Jornadas',
+    color:'#311B92', bg:'#EDE7F6', txt:'#1e1b4b',
+    tasks:[
+      {id:'cb1',p:'manha',text:'Auditar amostra de atendimentos do dia anterior e checar aderência às jornadas',metric:'Aderência às Jornadas · +120pts · meta ≥ 85%',penalty:'−100pts por oscilação sem mapeamento',critical:true},
+      {id:'cb2',p:'manha',text:'Registrar desvios de jornada identificados e notificar os analistas envolvidos',metric:'Compliance de jornadas',penalty:null,critical:false},
+      {id:'cb3',p:'manha',text:'Revisar backlog de jornadas pendentes e priorizar criação ou atualização',metric:'Novas Jornadas Criadas · +120pts',penalty:null,critical:false},
+      {id:'cb4',p:'tarde',text:'Trabalhar na criação ou atualização de jornada conforme backlog priorizado',metric:'Novas Jornadas Criadas',penalty:null,critical:false},
+      {id:'cb5',p:'tarde',text:'Consolidar insights recebidos dos Squads 1, 2 e 3 para evolução das jornadas',metric:'Ciclo de melhoria contínua',penalty:null,critical:false},
+      {id:'cb6',p:'tarde',text:'Preparar material de capacitação para o próximo ciclo mensal de treinamento',metric:'Cobertura de Capacitação · +120pts · meta 100%',penalty:null,critical:false},
+      {id:'cb7',p:'final',text:'Atualizar status do backlog: jornadas concluídas, em andamento e pendentes',metric:'Gestão do backlog',penalty:null,critical:false},
+      {id:'cb8',p:'final',text:'Registrar analistas com desvio recorrente para acompanhamento de aderência',metric:'Aderência às Jornadas',penalty:'−100pts por oscilação sem mapeamento',critical:true},
+    ]
+  },
+  jefferson:{
+    name:'Jefferson', squad:'S5 · CX Jornadas', role:'Jornadas',
+    color:'#311B92', bg:'#EDE7F6', txt:'#1e1b4b',
+    tasks:[
+      {id:'jf1',p:'manha',text:'Auditar amostra de atendimentos do dia anterior e checar aderência às jornadas',metric:'Aderência às Jornadas · +120pts · meta ≥ 85%',penalty:'−100pts por oscilação sem mapeamento',critical:true},
+      {id:'jf2',p:'manha',text:'Registrar desvios de jornada identificados e notificar os analistas envolvidos',metric:'Compliance de jornadas',penalty:null,critical:false},
+      {id:'jf3',p:'manha',text:'Identificar analistas com baixa aderência recorrente para PDI',metric:'Suporte ao líder · mensal',penalty:null,critical:false},
+      {id:'jf4',p:'tarde',text:'Conduzir capacitação ou micro-treinamento com analistas de CS (quando programado)',metric:'Cobertura de Capacitação · +120pts · meta 100%',penalty:null,critical:false},
+      {id:'jf5',p:'tarde',text:'Atualizar jornadas com base nos insights da semana dos Squads 1, 2 e 3',metric:'Novas Jornadas Criadas · +120pts',penalty:null,critical:false},
+      {id:'jf6',p:'tarde',text:'Preparar avaliação pós-capacitação para medir score dos analistas — meta ≥ 80',metric:'Score de Avaliação Pós-Capacitação · +80pts',penalty:null,critical:false},
+      {id:'jf7',p:'final',text:'Atualizar backlog de jornadas: documentar o que foi criado ou atualizado hoje',metric:'Gestão do backlog',penalty:null,critical:false},
+      {id:'jf8',p:'final',text:'Confirmar: todos os desvios têm registro e notificação para o analista responsável',metric:'Compliance',penalty:'−100pts por oscilação sem mapeamento',critical:true},
+    ]
+  },
+};
+
+const PERIODS = [
+  {key:'manha',  label:'Manhã'},
+  {key:'tarde',  label:'Tarde'},
+  {key:'final',  label:'Final do dia'},
+];
+
+function storageKey(pid){
+  return `cx-checklist-${pid}-${TODAY_KEY}`;
+}
+function loadDone(pid){
+  try{ const r=localStorage.getItem(storageKey(pid)); return r?JSON.parse(r):{}; }catch(e){return {};}
+}
+function saveDone(pid,done){
+  try{ localStorage.setItem(storageKey(pid),JSON.stringify(done)); }catch(e){}
+}
+
+let currentPid=null, done={};
+
+function render(pid){
+  const p=PEOPLE[pid];
+  const tasks=p.tasks;
+  const total=tasks.length;
+  const doneCount=tasks.filter(t=>done[t.id]).length;
+  const pct=Math.round(doneCount/total*100);
+
+  let penRisk=0;
+  tasks.forEach(t=>{
+    if(!done[t.id]&&t.penalty){
+      const m=t.penalty.match(/(\d+)/);
+      if(m) penRisk+=parseInt(m[1]);
+    }
+  });
+  const critPending=tasks.filter(t=>t.critical&&!done[t.id]).length;
+
+  const penColor=penRisk===0?'c-ok':penRisk<=100?'c-warn':'c-danger';
+  const critColor=critPending===0?'c-ok':'c-danger';
+  const doneColor=pct>=100?'c-ok':pct>=60?'c-warn':'c-danger';
+
+  let html=`
+  <div class="header-card">
+    <div class="hc-top">
+      <div>
+        <div class="hc-name">${p.name}</div>
+        <div class="hc-role">${p.squad}</div>
+      </div>
+      <span class="squad-badge" style="background:${p.bg};color:${p.txt}">${p.role}</span>
+    </div>
+    <div class="progress-row">
+      <div class="prog-bar-wrap">
+        <div class="prog-bar" style="width:${pct}%;background:${pct>=100?'#1B5E20':p.color}"></div>
+      </div>
+      <span class="prog-lbl">${doneCount} / ${total}</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num ${doneColor}">${pct}%</div><div class="stat-lbl">concluído</div></div>
+      <div class="stat-box"><div class="stat-num ${penColor}">−${penRisk}pts</div><div class="stat-lbl">pts em risco</div></div>
+      <div class="stat-box"><div class="stat-num ${critColor}">${critPending}</div><div class="stat-lbl">críticas pendentes</div></div>
+    </div>
+  </div>`;
+
+  if(doneCount===total){
+    html+=`<div class="all-done">
+      <div class="all-done-icon">✓</div>
+      <div class="all-done-txt">Dia concluído!</div>
+      <div class="all-done-sub">Todas as tarefas registradas. Nenhum ponto em risco.</div>
+    </div>`;
+  }
+
+  PERIODS.forEach(period=>{
+    const pt=tasks.filter(t=>t.p===period.key);
+    if(!pt.length) return;
+    const pending=pt.filter(t=>!done[t.id]).length;
+    html+=`<div class="period-section">
+      <div class="period-header">
+        ${period.label}
+        <span class="period-pending ${pending>0?'has-pending':''}">${pending} pendente${pending!==1?'s':''}</span>
+      </div>`;
+    pt.forEach(t=>{
+      const isDone=!!done[t.id];
+      const isCrit=t.critical&&!isDone;
+      html+=`<div class="task-item ${isDone?'done':''} ${isCrit?'critical-pending':''}" onclick="toggleTask('${t.id}')">
+        <div class="chk ${isDone?'checked':''}">
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+            <polyline points="1,5 4.5,8.5 11,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="task-body">
+          <div class="task-text">${t.text}</div>
+          <div class="tag-row">
+            <span class="metric-tag">${t.metric}</span>
+            ${t.penalty?`<span class="penalty-tag">${t.penalty}</span>`:''}
+            ${isCrit?'<span class="critical-tag">crítico</span>':''}
+          </div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+
+  html+=`<button class="reset-btn" onclick="resetDay()">↺ Reiniciar tarefas do dia</button>`;
+
+  document.getElementById('main-content').innerHTML=html;
+}
+
+window.toggleTask=function(tid){
+  if(!currentPid) return;
+  done[tid]=!done[tid];
+  saveDone(currentPid,done);
+  render(currentPid);
+};
+
+window.resetDay=function(){
+  if(!currentPid) return;
+  if(!confirm('Reiniciar todas as tarefas do dia?')) return;
+  done={};
+  saveDone(currentPid,done);
+  render(currentPid);
+};
+
+document.getElementById('person-sel').addEventListener('change',function(){
+  const pid=this.value;
+  if(!pid){
+    document.getElementById('main-content').innerHTML=`<div class="empty-state"><div class="empty-icon">☑</div>Selecione seu nome para ver as tarefas do dia.</div>`;
+    currentPid=null; return;
+  }
+  currentPid=pid;
+  done=loadDone(pid);
+  render(pid);
+});
+
+// Restore last selection
+(function(){
+  const last=localStorage.getItem('cx-last-person');
+  if(last&&PEOPLE[last]){
+    document.getElementById('person-sel').value=last;
+    currentPid=last;
+    done=loadDone(last);
+    render(last);
+  }
+})();
+
+document.getElementById('person-sel').addEventListener('change',function(){
+  if(this.value) localStorage.setItem('cx-last-person',this.value);
+});
+</script>
+</body>
+</html>
